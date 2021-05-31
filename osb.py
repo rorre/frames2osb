@@ -23,7 +23,7 @@ def generate_pixels(obj_size: int) -> PixelValue[Osbject]:
                 "dot.png",
                 "Background",
                 "Centre",
-                -obj_offset + x * obj_size,
+                    obj_offset + x * obj_size,
                 obj_offset + y * obj_size,
             )
             obj.scale(0, -1, -1, 1, obj_size)
