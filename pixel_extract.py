@@ -7,7 +7,7 @@ from typing import List, TYPE_CHECKING
 import numpy as np
 from PIL import Image
 
-from helper import PixelData, chunks, sort_image_files
+from helper import PixelData, chunks, get_tqdm, sort_image_files
 
 if TYPE_CHECKING:
     from tqdm import tqdm
@@ -74,11 +74,7 @@ def process_frames(
 
 
 def run(obj_size, number_of_thread=2, number_of_splits=16):
-    try:
-        get_ipython()
-        from tqdm.notebook import tqdm
-    except NameError:
-        from tqdm import tqdm
+    tqdm = get_tqdm()
 
     os.makedirs("datas", exist_ok=True)
     with ThreadPool(number_of_thread) as pool, tqdm(total=len(all_image_files)) as pbar:

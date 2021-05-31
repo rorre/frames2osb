@@ -3,7 +3,7 @@ import pickle
 
 from osbpy import Osbject
 
-from helper import PixelData, PixelValue, sort_datas
+from helper import PixelData, PixelValue, get_tqdm, sort_datas
 
 
 def generate_pixels(obj_size: int) -> PixelValue[Osbject]:
@@ -38,11 +38,7 @@ def generate_osb(
     transparency_precision: int = 1,
     music_offset: int = 0,
 ):
-    try:
-        get_ipython()
-        from tqdm.notebook import tqdm
-    except NameError:
-        from tqdm import tqdm
+    tqdm = get_tqdm()
 
     data_files = os.listdir("datas")
     data_files.sort(key=sort_datas)
