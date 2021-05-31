@@ -5,12 +5,6 @@ from osbpy import Osbject
 
 from helper import PixelData, PixelValue, sort_datas
 
-X_MAX = 640 // 10
-Y_MAX = 480 // 10
-OBJ_SCALE = 10
-music_offset = 0
-OBJ_OFFSET = OBJ_SCALE // 2
-
 
 def generate_pixels(obj_size: int) -> PixelValue[Osbject]:
     "Generate pixels for storyboard, represented with a square every obj_size-px"
@@ -42,6 +36,7 @@ def generate_osb(
     output_filename,
     fps: int = 30,
     transparency_precision: int = 1,
+    music_offset: int = 0,
 ):
     try:
         get_ipython()
@@ -53,23 +48,26 @@ def generate_osb(
     data_files.sort(key=sort_datas)
     pixels = generate_pixels(obj_size)
 
+    x_max = 640 // obj_size
+    y_max = 480 // obj_size
+
     # Prepare to save last alpha data before next data file is being loaded
     # This is because it is possible that next alpha data has the same alpha value as current one.
     # Therefore by remembering last alpha data we can avoid duplicate commands.
     # Also I know I can use list comprehension, but I'd rather have people be able to
     # read the code tbh.
     last_alpha_data: PixelValue[float] = []
-    for x in range(X_MAX):
+    for x in range(x_max):
         last_alpha_data.append([])
-        for y in range(Y_MAX):
+        for y in range(y_max):
             last_alpha_data[x].append(None)
 
     for data_file in tqdm(os.listdir("datas")):
         with open(os.path.join("datas", data_file), "rb") as f:
             pixel_data: PixelData = pickle.load(f)
 
-        for x in range(X_MAX):
-            for y in range(Y_MAX):
+        for x in range(x_max):
+            for y in range(y_max):
                 for p in pixel_data[x][y]:
                     # offset here technically isn't offset in miliseconds, it is n-frame from start.
                     # So we use 1000 / fps.

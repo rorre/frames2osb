@@ -35,6 +35,13 @@ parser.add_argument(
     type=int,
 )
 parser.add_argument(
+    "--offset",
+    default=1,
+    help="Set storyboard offset.",
+    metavar="N",
+    type=int,
+)
+parser.add_argument(
     "--only-generate",
     action=argparse.BooleanOptionalAction,
     help="Only generate storyboard.",
@@ -57,4 +64,5 @@ if __name__ == "__main__":
         args.outfile,
         fps=args.fps,
         transparency_precision=args.transparency,
+        music_offset=args.offset,
     )
