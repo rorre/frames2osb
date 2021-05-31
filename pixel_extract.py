@@ -22,7 +22,7 @@ def process_frames(
     filename: str,
     obj_size: int,
     bar: "tqdm",
-    i_n: int = 0,
+    start_frame: int = 0,
 ):
     if 640 % obj_size != 0 or 480 % obj_size != 0:
         raise Exception("obj_size is not a factor of 640 and 480.")
@@ -56,7 +56,7 @@ def process_frames(
                     or pixel_data[x][y][-1]["alpha"] != current_alpha
                 ):
                     pixel_data[x][y].append(
-                        {"offset": 410 * i_n + i, "alpha": current_alpha}
+                        {"offset": start_frame + i, "alpha": current_alpha}
                     )
 
         # Delete from memory to save space.
@@ -82,9 +82,8 @@ def run(obj_size, number_of_thread=2, number_of_splits=16):
 
     os.makedirs("datas", exist_ok=True)
     with ThreadPool(number_of_thread) as pool, tqdm(total=len(all_image_files)) as pbar:
-        for i, arr in enumerate(
-            chunks(all_image_files, len(all_image_files) // number_of_splits)
-        ):
+        nchunk = len(all_image_files) // number_of_splits
+        for i, arr in enumerate(chunks(all_image_files, nchunk)):
             pool.apply_async(
                 process_frames,
                 args=(
@@ -92,7 +91,7 @@ def run(obj_size, number_of_thread=2, number_of_splits=16):
                     f"datas/data_{i}.dat",
                     obj_size,
                     pbar,
-                    i,
+                    nchunk * i,
                 ),
             )
 
