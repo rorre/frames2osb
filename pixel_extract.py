@@ -1,6 +1,7 @@
 import gc
 import os
 import pickle
+import shutil
 from multiprocessing.pool import ThreadPool
 from typing import TYPE_CHECKING, List
 
@@ -71,6 +72,7 @@ def process_frames(
 def run(obj_size, number_of_thread=2, number_of_splits=16):
     tqdm = get_tqdm()
 
+    shutil.rmtree("datas")
     os.makedirs("datas", exist_ok=True)
     with ThreadPool(number_of_thread) as pool, tqdm(total=len(all_image_files)) as pbar:
         nchunk = len(all_image_files) // number_of_splits
