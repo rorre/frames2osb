@@ -1,10 +1,8 @@
 import os
-from typing import List, TypeVar, TypedDict
+from collections import namedtuple
+from typing import List, TypeVar
 
-
-class Point(TypedDict):
-    offset: int
-    alpha: int
+Point = namedtuple("Point", ["offset", "alpha"])
 
 
 T = TypeVar("T")

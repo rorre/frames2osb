@@ -2,12 +2,12 @@ import gc
 import os
 import pickle
 from multiprocessing.pool import ThreadPool
-from typing import List, TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 import numpy as np
 from PIL import Image
 
-from helper import PixelData, chunks, get_tqdm, sort_image_files
+from helper import PixelData, Point, chunks, get_tqdm, sort_image_files
 
 if TYPE_CHECKING:
     from tqdm import tqdm
@@ -51,13 +51,8 @@ def process_frames(
                 # Only add an entry if current alpha is different from last alpha.
                 # Thus we only have timestamps where alpha value is different.
                 current_alpha = int(arr[y][x])
-                if (
-                    not pixel_data[x][y]
-                    or pixel_data[x][y][-1]["alpha"] != current_alpha
-                ):
-                    pixel_data[x][y].append(
-                        {"offset": start_frame + i, "alpha": current_alpha}
-                    )
+                if not pixel_data[x][y] or pixel_data[x][y][-1].alpha != current_alpha:
+                    pixel_data[x][y].append(Point(start_frame + i, current_alpha))
 
         # Delete from memory to save space.
         del im_resized

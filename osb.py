@@ -67,8 +67,8 @@ def generate_osb(
                 for p in pixel_data[x][y]:
                     # offset here technically isn't offset in miliseconds, it is n-frame from start.
                     # So we use 1000 / fps.
-                    start_offset = music_offset + round(p["offset"] * 1000 / fps)
-                    alpha = round(p["alpha"] / 255, transparency_precision)
+                    start_offset = music_offset + round(p.offset * 1000 / fps)
+                    alpha = round(p.alpha / 255, transparency_precision)
 
                     # Only do another command if current alpha is different from last alpha.
                     # This is to avoid duplicate command and save more space.
