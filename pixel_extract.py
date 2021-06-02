@@ -1,4 +1,3 @@
-import gc
 import os
 import pickle
 import shutil
@@ -12,7 +11,6 @@ from helper import PixelData, Point, chunks, get_tqdm, sort_image_files
 if TYPE_CHECKING:
     from tqdm import tqdm
 
-gc.disable()
 all_image_files = os.listdir("frames")
 all_image_files.sort(key=sort_image_files)
 
