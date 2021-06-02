@@ -5,7 +5,6 @@ import shutil
 from multiprocessing.pool import ThreadPool
 from typing import TYPE_CHECKING, List
 
-import numpy as np
 from PIL import Image
 
 from helper import PixelData, Point, chunks, get_tqdm, sort_image_files
@@ -45,20 +44,18 @@ def process_frames(
             im_resized = im.resize((x_max, y_max))
 
         gray = im_resized.convert("L")
-        arr = np.array(gray)
 
-        for y in range(arr.shape[0]):
-            for x in range(arr.shape[1]):
+        for x in range(x_max):
+            for y in range(y_max):
                 # Only add an entry if current alpha is different from last alpha.
                 # Thus we only have timestamps where alpha value is different.
-                current_alpha = int(arr[y][x])
+                current_alpha = int(gray.getpixel((x, y)))
                 if not pixel_data[x][y] or pixel_data[x][y][-1].alpha != current_alpha:
                     pixel_data[x][y].append(Point(start_frame + i, current_alpha))
 
         # Delete from memory to save space.
         del im_resized
         del gray
-        del arr
         bar.update(1)
 
     # While using json is viable, pickle saves much more disk space and time.

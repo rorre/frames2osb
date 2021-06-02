@@ -6,13 +6,12 @@ Storyboard generator for [this thing](https://osu.ppy.sh/beatmapsets/1478246#osu
 - Python 3.8
 - Ffmpeg
 - osbpy
-- numpy
 - Pillow
 - tqdm
 
 To install, simply do the following command:
 ```
-pip install osbpy numpy pillow tqdm
+pip install osbpy pillow tqdm
 ```
 
 ## Generating
