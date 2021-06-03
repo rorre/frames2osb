@@ -3,16 +3,12 @@ import pickle
 
 from osbpy import Osbject
 
-from helper import PixelData, PixelValue, get_tqdm, sort_datas
+from helper import PixelData, PixelValue, get_max_resolution, get_tqdm, sort_datas
 
 
 def generate_pixels(obj_size: int) -> PixelValue[Osbject]:
     "Generate pixels for storyboard, represented with a square every obj_size-px"
-    if 640 % obj_size != 0 or 480 % obj_size != 0:
-        raise Exception("obj_size is not a factor of 640 and 480.")
-
-    x_max = 640 // obj_size
-    y_max = 480 // obj_size
+    x_max, y_max, x_shift = get_max_resolution(obj_size)
     obj_offset = obj_size // 2
 
     pixels: PixelValue[Osbject] = []
@@ -23,7 +19,7 @@ def generate_pixels(obj_size: int) -> PixelValue[Osbject]:
                 "dot.png",
                 "Background",
                 "Centre",
-                obj_offset + x * obj_size,
+                -x_shift + obj_offset + x * obj_size,
                 obj_offset + y * obj_size,
             )
             obj.scale(0, -1, -1, 1, obj_size)
@@ -43,9 +39,7 @@ def generate_osb(
     data_files = os.listdir("datas")
     data_files.sort(key=sort_datas)
     pixels = generate_pixels(obj_size)
-
-    x_max = 640 // obj_size
-    y_max = 480 // obj_size
+    x_max, y_max, _ = get_max_resolution(obj_size)
 
     # Prepare to save last alpha data before next data file is being loaded
     # This is because it is possible that next alpha data has the same alpha value as current one.

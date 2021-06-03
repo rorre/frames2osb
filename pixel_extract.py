@@ -6,7 +6,14 @@ from typing import TYPE_CHECKING, List
 
 from PIL import Image
 
-from helper import PixelData, Point, chunks, get_tqdm, sort_image_files
+from helper import (
+    PixelData,
+    Point,
+    chunks,
+    get_max_resolution,
+    get_tqdm,
+    sort_image_files,
+)
 
 if TYPE_CHECKING:
     from tqdm import tqdm
@@ -22,11 +29,7 @@ def process_frames(
     bar: "tqdm",
     start_frame: int = 0,
 ):
-    if 640 % obj_size != 0 or 480 % obj_size != 0:
-        raise Exception("obj_size is not a factor of 640 and 480.")
-
-    x_max = 640 // obj_size
-    y_max = 480 // obj_size
+    x_max, y_max, _ = get_max_resolution(obj_size)
 
     # I know I can use list comprehension, but I'd rather have people be able to
     # read the code tbh.
