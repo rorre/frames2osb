@@ -3,7 +3,9 @@ import pickle
 
 from osbpy import Osbject
 
-from helper import PixelData, PixelValue, get_max_resolution, get_tqdm, sort_datas
+from helper import get_max_resolution, get_tqdm, sort_datas
+
+from .types import PixelData, PixelValue
 
 
 def generate_pixels(obj_size: int) -> PixelValue[Osbject]:
@@ -52,7 +54,7 @@ def generate_osb(
         for y in range(y_max):
             last_alpha_data[x].append(None)
 
-    for data_file in tqdm(os.listdir("datas")):
+    for data_file in tqdm(data_files):
         with open(os.path.join("datas", data_file), "rb") as f:
             pixel_data: PixelData = pickle.load(f)
 

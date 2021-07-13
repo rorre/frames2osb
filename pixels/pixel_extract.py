@@ -6,14 +6,9 @@ from typing import TYPE_CHECKING, List
 
 from PIL import Image
 
-from helper import (
-    PixelData,
-    Point,
-    chunks,
-    get_max_resolution,
-    get_tqdm,
-    sort_image_files,
-)
+from helper import chunks, get_max_resolution, get_tqdm, sort_image_files
+
+from .types import PixelData, Point
 
 if TYPE_CHECKING:
     from tqdm import tqdm

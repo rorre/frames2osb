@@ -1,18 +1,9 @@
 import math
 import os
 import warnings
-from collections import namedtuple
 from functools import cache
-from typing import List, TypeVar
 
 from PIL import Image
-
-Point = namedtuple("Point", ["offset", "alpha"])
-
-
-T = TypeVar("T")
-PixelData = List[List[List[Point]]]
-PixelValue = List[List[T]]
 
 
 def sort_datas(filename):

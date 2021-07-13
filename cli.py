@@ -1,55 +1,34 @@
-import argparse
+from tap import Tap
 
-import osb
-import pixel_extract
 
-parser = argparse.ArgumentParser(description="Generate storyboard for Bad Apple.")
-parser.add_argument("outfile", help="Output .osb filename.")
-parser.add_argument("size", help="Size of each square in storyboard.", type=int)
-parser.add_argument(
-    "-j",
-    "--jobs",
-    default=2,
-    help="Number of threads to spawn.",
-    metavar="N",
-    type=int,
-)
-parser.add_argument(
-    "--splits",
-    default=16,
-    help="Number of splits to generate.",
-    metavar="N",
-    type=int,
-)
-parser.add_argument(
-    "--fps",
-    default=30,
-    help="FPS of the target storyboard.",
-    metavar="N",
-    type=int,
-)
-parser.add_argument(
-    "--transparency",
-    default=1,
-    help="Transparency precision level.",
-    metavar="N",
-    type=int,
-)
-parser.add_argument(
-    "--offset",
-    default=1,
-    help="Set storyboard offset.",
-    metavar="N",
-    type=int,
-)
-parser.add_argument(
-    "--only-generate",
-    action=argparse.BooleanOptionalAction,
-    help="Only generate storyboard.",
-)
+class CLIParser(Tap):
+    jobs: int = 2  # Number of threads to spawn.
+    splits: int = 16  # Number of splits to generate.
+    fps: int = 30  # Set storyboard's FPS.
+    transparency: int = 1  # Transparency precision level.
+    offset: int = 1  # Set storyboard's offset.
+    only_generate: bool = False  # Only generate storyboard.
+    use_pixels: bool = False  # Generate each pixels instead of using QuadTree.
+
+    size: int
+    outfile: str
+
+    def configure(self):
+        self.add_argument("outfile", help="Output .osb filename.")
+        self.add_argument("size", help="Size of each square in storyboard.", type=int)
+        self.description = "Generate storyboard for Bad Apple."
+
 
 if __name__ == "__main__":
-    args = parser.parse_args()
+    args = CLIParser().parse_args()
+
+    if args.use_pixels:
+        from pixels import osb, pixel_extract
+    else:
+        from quadtree import osb, pixel_extract
+
+    if not args.use_pixels and args.size >= 7:
+        raise Exception("Can not use 7 or more for quadtree quality settings.")
 
     if not args.only_generate:
         print("> Extracting pixel data")
