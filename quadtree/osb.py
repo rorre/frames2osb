@@ -31,6 +31,25 @@ def generate_particles(
     _, _, x_shift = get_max_resolution(1)
     qtree: QuadNode = frame.quadtree
     start_offset = music_offset + round(frame.offset * 1000 / fps)
+
+    # All this child thing is really bizarre, I know. I'll try to explain it:
+    # Basically, for "key" here is a childrent of "parent_key".
+    # By children, I mean it lives under "parent" pixels.
+    # And so we store ourself to the list of our parent's children.
+    #
+    # Here is a good tree of it:
+    #          vvvvvvvvvv               -----  vvvvvvvvv
+    #         > Parent 1 <              |     > Child 4 <
+    #          ^^^^^^^^^^               |      ^^^^^^^^^
+    #              |                    |          |
+    #        -----------------          |    -------------
+    #        |   |   |       |          |    |   |   |   |
+    #       ... ... ...   vvvvvvvvv     |   ... ... ... ...
+    #                    > Child 4 < ---       (Repeats)
+    #                     ^^^^^^^^^
+    # With this relationship in mind, if we are a parent and we are turning on
+    # our element, we can simply look at "children_keys" that we purpose as a
+    # table and recursively disable all childs within it.
     key = "{0.x}:{0.y}:{0.w}:{0.h}".format(qtree)
     if parent_key and key not in children_keys[parent_key]:
         children_keys[parent_key].append(key)
@@ -39,8 +58,10 @@ def generate_particles(
         children_keys[key] = []
 
     if qtree.final or qtree._depth == 7 - quality:
+        # Recursively disable ALL childs (that means also disable child of child)
         disable_childs(key, start_offset)
         if key not in pixels:
+            # Initialize if this is the first time we are in the storyboard.
             pixels[key] = PixelData(
                 -1,
                 Osbject(
@@ -61,6 +82,7 @@ def generate_particles(
         pixels[key].alpha = alpha
         pixels[key].osb.fade(0, start_offset, start_offset, alpha, alpha)
     else:
+        # Disable ourselves if any of our child is turning on.
         if key in pixels and pixels[key].alpha != 0:
             pixels[key].osb.fade(0, start_offset, start_offset, 0, 0)
             pixels[key].alpha = 0

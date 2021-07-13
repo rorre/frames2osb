@@ -19,6 +19,9 @@ class PixelData:
     osb: Osbject
 
 
+# Code starting here are taken from
+# https://medium.com/analytics-vidhya/transform-an-image-into-a-quadtree-39b3aa6e019a
+# with quite a number of modification to fit my purpose.
 def calculate_mean(img: np.ndarray):
     return np.mean(img, axis=(0, 1), dtype=int)
 
@@ -51,8 +54,11 @@ class QuadNode:
 
         self.x = x
         self.y = y
-        self.h = self.resolution[0] + 2
-        self.w = self.resolution[1] + 2
+        self.h = self.resolution[0] + 2  # +2 Padding
+        self.w = self.resolution[1] + 2  # +2 Padding
+
+        # We don't want the storyboard to be very very detailed so limit the max depth.
+        # Max depth is 1-7.
         self.final = depth == max_depth or all(np.all(x == x[0]) for x in image_pixels)
 
         self.create_depth(image_pixels)
@@ -62,6 +68,7 @@ class QuadNode:
             return
         split_img = quad_split(image_pixels)
 
+        # Maybe trigonometry could help my ass here but I cba lol
         next_depth = self._depth + 1
         self.tl = type(self)(
             split_img[0],
