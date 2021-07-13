@@ -8,6 +8,7 @@ Storyboard generator for [this thing](https://osu.ppy.sh/beatmapsets/1478246#osu
 - osbpy
 - Pillow
 - tqdm
+- tap (if CLI)
 
 To install, simply do the following command:
 ```
@@ -24,20 +25,27 @@ or run `mp4osb.ipynb` in an IPython/Jupyter Notebook instance. (Much better with
 
 ## CLI Usage
 ```
-usage: cli.py [-h] [-j N] [--splits N] [--fps N] [--transparency N] outfile size
+usage: cli.py [--jobs JOBS] [--splits SPLITS] [--fps FPS] [--transparency TRANSPARENCY] [--offset OFFSET] [--only_generate] [--use_pixels]
+              [-h]
+              size outfile
 
 Generate storyboard for Bad Apple.
 
 positional arguments:
-  outfile           Output .osb filename.
-  size              Size of each square in storyboard.
+  size                  Size of each square in storyboard.
+  outfile               Output .osb filename.
 
 optional arguments:
-  -h, --help        show this help message and exit
-  -j N, --jobs N    Number of threads to spawn.
-  --splits N        Number of splits to generate.
-  --fps N           FPS of the target storyboard.
-  --transparency N  Transparency precision level.
-  --only-generate, --no-only-generate
-                    Only generate storyboard.
+  --jobs JOBS           (int, default=2) Number of threads to spawn.
+  --splits SPLITS       (int, default=16) Number of splits to generate.
+  --fps FPS             (int, default=30) Set storyboard's FPS.
+  --transparency TRANSPARENCY
+                        (int, default=1) Transparency precision level.
+  --offset OFFSET       (int, default=1) Set storyboard's offset.
+  --only_generate       (bool, default=False) Only generate storyboard.
+  --use_pixels          (bool, default=False) Generate each pixels instead of using QuadTree.
+  -h, --help            show this help message and exit
 ```
+
+## RGB?
+Soon, I guess.
