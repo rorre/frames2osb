@@ -89,6 +89,7 @@ def generate_particles(
 
         for q in (qtree.tl, qtree.tr, qtree.bl, qtree.br):
             generate_particles(
+                quality,
                 FrameData(frame.offset, q),
                 fps,
                 transparency_precision,
