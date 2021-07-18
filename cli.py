@@ -5,10 +5,11 @@ class CLIParser(Tap):
     jobs: int = 2  # Number of threads to spawn.
     splits: int = 16  # Number of splits to generate.
     fps: int = 30  # Set storyboard's FPS.
-    transparency: int = 1  # Transparency precision level.
+    precision: int = 1  # Transparency precision level.
     offset: int = 1  # Set storyboard's offset.
     only_generate: bool = False  # Only generate storyboard.
     use_pixels: bool = False  # Generate each pixels instead of using QuadTree.
+    use_rgb: bool = False  # Use RGB instead of alpha value.
 
     size: int
     outfile: str
@@ -34,6 +35,7 @@ if __name__ == "__main__":
         print("> Extracting pixel data")
         pixel_extract.run(
             args.size,
+            args.use_rgb,
             number_of_thread=args.jobs,
             number_of_splits=args.splits,
         )
@@ -43,6 +45,7 @@ if __name__ == "__main__":
         args.size,
         args.outfile,
         fps=args.fps,
-        transparency_precision=args.transparency,
+        precision=args.precision,
+        use_rgb=args.use_rgb,
         music_offset=args.offset,
     )

@@ -24,6 +24,7 @@ def process_frames(
     quality: int,
     bar: "tqdm",
     start_frame: int = 0,
+    use_rgb: bool = False,
 ):
     x_max, y_max, _ = get_max_resolution(1)
     max_depth = 7 - quality
@@ -34,14 +35,15 @@ def process_frames(
         with Image.open(os.path.join("frames", image_file)) as im:
             im_resized = im.resize((x_max, y_max))
 
-        gray = im_resized.convert("L")
-        numpy_image = np.array(gray)
+        if use_rgb:
+            numpy_image = np.array(im_resized)
+        else:
+            numpy_image = np.array(im_resized.convert("L"))
 
         qtree = QuadNode(numpy_image, x_max // 2, y_max // 2, max_depth=max_depth)
         quad_frames.append(FrameData(start_frame + i, qtree))
         bar.update(1)
         del im_resized
-        del gray
 
     with open(filename, "wb") as f:
         pickle.dump(quad_frames, f)
@@ -49,7 +51,7 @@ def process_frames(
     del quad_frames
 
 
-def run(quality: int, number_of_thread=2, number_of_splits=16):
+def run(quality: int, use_rgb: bool = False, number_of_thread=2, number_of_splits=16):
     tqdm = get_tqdm()
 
     try:
@@ -62,7 +64,7 @@ def run(quality: int, number_of_thread=2, number_of_splits=16):
         for i, arr in enumerate(chunks(all_image_files, nchunk)):
             pool.apply_async(
                 process_frames,
-                args=(arr, f"datas/data_{i}.dat", quality, pbar, nchunk * i),
+                args=(arr, f"datas/data_{i}.dat", quality, pbar, nchunk * i, use_rgb),
             )
 
         pool.close()

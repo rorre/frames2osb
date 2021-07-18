@@ -33,9 +33,12 @@ def generate_osb(
     obj_size: int,
     output_filename,
     fps: int = 30,
-    transparency_precision: int = 1,
+    precision: int = 1,
+    use_rgb: bool = False,
     music_offset: int = 0,
 ):
+    if use_rgb:
+        raise Exception("Pixels cannot use RGB.")
     tqdm = get_tqdm()
 
     data_files = os.listdir("datas")
@@ -64,7 +67,7 @@ def generate_osb(
                     # offset here technically isn't offset in miliseconds, it is n-frame from start.
                     # So we use 1000 / fps.
                     start_offset = music_offset + round(p.offset * 1000 / fps)
-                    alpha = round(p.alpha / 255, transparency_precision)
+                    alpha = round(p.alpha / 255, precision)
 
                     # Only do another command if current alpha is different from last alpha.
                     # This is to avoid duplicate command and save more space.

@@ -62,7 +62,9 @@ def process_frames(
     del pixel_data
 
 
-def run(obj_size, number_of_thread=2, number_of_splits=16):
+def run(obj_size, use_rgb: bool = False, number_of_thread=2, number_of_splits=16):
+    if use_rgb:
+        raise Exception("Pixels cannot use RGB.")
     tqdm = get_tqdm()
 
     try:

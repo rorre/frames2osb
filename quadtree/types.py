@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from functools import reduce
 from operator import add
-from typing import List, NamedTuple, Optional
+from typing import List, NamedTuple, Optional, Union
 
 import numpy as np
 from numpy.typing import NDArray
@@ -17,6 +17,7 @@ class FrameData(NamedTuple):
 
 @dataclass
 class PixelData:
+    rgb: int
     alpha: float
     osb: Osbject
 
@@ -24,7 +25,7 @@ class PixelData:
 # Code starting here are taken from
 # https://medium.com/analytics-vidhya/transform-an-image-into-a-quadtree-39b3aa6e019a
 # with quite a number of modification to fit my purpose.
-def calculate_mean(img: ImageArray) -> int:
+def calculate_mean(img: ImageArray) -> Union[int, ImageArray]:
     return np.mean(img, axis=(0, 1), dtype=np.int32)
 
 

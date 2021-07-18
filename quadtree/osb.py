@@ -1,6 +1,6 @@
 import os
 import pickle
-from typing import Dict, List
+from typing import Dict, List, cast
 
 from osbpy import Osbject
 
@@ -24,7 +24,8 @@ def generate_particles(
     quality: int,
     frame: FrameData,
     fps: int = 30,
-    transparency_precision: int = 1,
+    precision: int = 1,
+    use_rgb: bool = False,
     music_offset: int = 0,
     parent_key: str = "",
 ):
@@ -64,6 +65,7 @@ def generate_particles(
             # Initialize if this is the first time we are in the storyboard.
             pixels[key] = PixelData(
                 -1,
+                -1,
                 Osbject(
                     "dot.png",
                     "Background",
@@ -75,12 +77,26 @@ def generate_particles(
             pixels[key].osb.vecscale(0, 0, 0, 1, 1, qtree.w + 1, qtree.h + 1)
             pixels[key].osb.fade(0, 0, 0, 0, 0)
 
-        alpha = round(qtree.mean / 255, transparency_precision)
-        if pixels[key].alpha == alpha:
-            return
+        if use_rgb:
+            mean_rgb = cast(List[int], qtree.mean)
 
-        pixels[key].alpha = alpha
-        pixels[key].osb.fade(0, start_offset, start_offset, alpha, alpha)
+            minimum_delta = 0
+            rgb_total = sum(mean_rgb)
+            if abs(rgb_total - pixels[key].rgb) > minimum_delta:
+                pixels[key].rgb = rgb_total
+                pixels[key].osb.colour(
+                    0, start_offset, start_offset, *mean_rgb, *mean_rgb
+                )
+            if pixels[key].alpha <= 0:
+                pixels[key].osb.fade(0, start_offset, start_offset, 1, 1)
+                pixels[key].alpha = 1
+        else:
+            mean_alpha = cast(int, qtree.mean)
+            alpha = round(mean_alpha / 255, precision)
+
+            if pixels[key].alpha != alpha:
+                pixels[key].alpha = alpha
+                pixels[key].osb.fade(0, start_offset, start_offset, alpha, alpha)
     else:
         # Disable ourselves if any of our child is turning on.
         if key in pixels and pixels[key].alpha != 0:
@@ -92,7 +108,8 @@ def generate_particles(
                 quality,
                 FrameData(frame.offset, q),
                 fps,
-                transparency_precision,
+                precision,
+                use_rgb,
                 music_offset,
                 key,
             )
@@ -102,7 +119,8 @@ def generate_osb(
     quality: int,
     output_filename: str,
     fps: int = 30,
-    transparency_precision: int = 1,
+    precision: int = 1,
+    use_rgb: bool = False,
     music_offset: int = 0,
 ):
     tqdm = get_tqdm()
@@ -119,7 +137,8 @@ def generate_osb(
                 quality,
                 frame,
                 fps,
-                transparency_precision,
+                precision,
+                use_rgb,
                 music_offset,
             )
             del frame
