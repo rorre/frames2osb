@@ -1,11 +1,13 @@
 from dataclasses import dataclass
 from functools import reduce
-from math import ceil
 from operator import add
-from typing import NamedTuple, Optional
+from typing import List, NamedTuple, Optional
 
 import numpy as np
+from numpy.typing import NDArray
 from osbpy import Osbject
+
+ImageArray = NDArray[np.int32]
 
 
 class FrameData(NamedTuple):
@@ -22,11 +24,11 @@ class PixelData:
 # Code starting here are taken from
 # https://medium.com/analytics-vidhya/transform-an-image-into-a-quadtree-39b3aa6e019a
 # with quite a number of modification to fit my purpose.
-def calculate_mean(img: np.ndarray):
-    return np.mean(img, axis=(0, 1), dtype=int)
+def calculate_mean(img: ImageArray) -> int:
+    return np.mean(img, axis=(0, 1), dtype=np.int32)
 
 
-def quad_split(image: np.ndarray):
+def quad_split(image: ImageArray) -> List[ImageArray]:
     half_split = np.array_split(image, 2)
     res = map(lambda x: np.array_split(x, 2, axis=1), half_split)
     return reduce(add, res)
@@ -40,9 +42,9 @@ class QuadNode:
 
     def __init__(
         self,
-        image_pixels: np.ndarray,
-        x: int,
-        y: int,
+        image_pixels: ImageArray,
+        x: float,
+        y: float,
         depth: int = 1,
         max_depth: int = 7,
     ):
@@ -54,8 +56,8 @@ class QuadNode:
 
         self.x = x
         self.y = y
-        self.h = self.resolution[0] + 2  # +2 Padding
-        self.w = self.resolution[1] + 2  # +2 Padding
+        self.h = self.resolution[0]
+        self.w = self.resolution[1]
 
         # We don't want the storyboard to be very very detailed so limit the max depth.
         # Max depth is 1-7.
@@ -72,29 +74,29 @@ class QuadNode:
         next_depth = self._depth + 1
         self.tl = type(self)(
             split_img[0],
-            ceil(self.x - self.w / 4),
-            ceil(self.y - self.h / 4),
+            self.x - split_img[0].shape[1] / 2,
+            self.y - split_img[0].shape[0] / 2,
             depth=next_depth,
             max_depth=self._max_depth,
         )
         self.tr = type(self)(
             split_img[1],
-            ceil(self.x + self.w / 4),
-            ceil(self.y - self.h / 4),
+            self.x + split_img[0].shape[1] / 2,
+            self.y - split_img[0].shape[0] / 2,
             depth=next_depth,
             max_depth=self._max_depth,
         )
         self.bl = type(self)(
             split_img[2],
-            ceil(self.x - self.w / 4),
-            ceil(self.y + self.h / 4),
+            self.x - split_img[0].shape[1] / 2,
+            self.y + split_img[0].shape[0] / 2,
             depth=next_depth,
             max_depth=self._max_depth,
         )
         self.br = type(self)(
             split_img[3],
-            ceil(self.x + self.w / 4),
-            ceil(self.y + self.h / 4),
+            self.x + split_img[0].shape[1] / 2,
+            self.y + split_img[0].shape[0] / 2,
             depth=next_depth,
             max_depth=self._max_depth,
         )
