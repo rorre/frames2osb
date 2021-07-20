@@ -8,6 +8,8 @@ from helper import get_max_resolution, get_tqdm, sort_datas
 
 from .types import FrameData, PixelData, QuadNode
 
+USE_AMOGUS = False
+
 pixels: Dict[str, PixelData] = {}
 children_keys: Dict[str, List[str]] = {}
 
@@ -63,18 +65,35 @@ def generate_particles(
         disable_childs(key, start_offset)
         if key not in pixels:
             # Initialize if this is the first time we are in the storyboard.
-            pixels[key] = PixelData(
-                -1,
-                -1,
-                Osbject(
-                    "dot.png",
-                    "Background",
-                    "Centre",
-                    qtree.x - x_shift,
-                    qtree.y,
-                ),
-            )
-            pixels[key].osb.vecscale(0, 0, 0, 1, 1, qtree.w + 1, qtree.h + 1)
+            if USE_AMOGUS:
+                pixels[key] = PixelData(
+                    -1,
+                    -1,
+                    Osbject(
+                        "res/amogus.png",
+                        "Background",
+                        "Centre",
+                        qtree.x - x_shift,
+                        qtree.y,
+                        6,
+                        68,
+                        "LoopForever",
+                    ),
+                )
+                pixels[key].osb.scale(0, 0, 0, 1, qtree.h / 1024)
+            else:
+                pixels[key] = PixelData(
+                    -1,
+                    -1,
+                    Osbject(
+                        "res/dot.png",
+                        "Background",
+                        "Centre",
+                        qtree.x - x_shift,
+                        qtree.y,
+                    ),
+                )
+                pixels[key].osb.vecscale(0, 0, 0, 1, 1, qtree.w, qtree.h)
             pixels[key].osb.fade(0, 0, 0, 0, 0)
 
         if use_rgb:
