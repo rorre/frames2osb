@@ -93,7 +93,7 @@ def generate_particles(
                         qtree.y,
                     ),
                 )
-                pixels[key].osb.vecscale(0, 0, 0, 1, 1, qtree.w, qtree.h)
+                pixels[key].osb.vecscale(0, 0, 0, 1, 1, qtree.w + 1, qtree.h + 1)
             pixels[key].osb.fade(0, 0, 0, 0, 0)
 
         if use_rgb:
