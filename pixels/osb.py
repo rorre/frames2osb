@@ -1,5 +1,6 @@
 import os
 import pickle
+from typing import Tuple
 
 from osbpy import Osbject
 
@@ -29,6 +30,55 @@ def generate_pixels(obj_size: int) -> PixelValue[Osbject]:
     return pixels
 
 
+def _run_rgb(
+    obj_size: int,
+    output_filename,
+    fps: int = 30,
+    precision: int = 1,
+    use_rgb: bool = False,
+    music_offset: int = 0,
+):
+    tqdm = get_tqdm()
+
+    data_files = os.listdir("datas")
+    data_files.sort(key=sort_datas)
+    pixels = generate_pixels(obj_size)
+    x_max, y_max, _ = get_max_resolution(obj_size)
+
+    last_pixel_data: PixelValue[Tuple[int, int, int]] = []
+    for x in range(x_max):
+        last_pixel_data.append([])
+        for y in range(y_max):
+            last_pixel_data[x].append(None)
+
+    for data_file in tqdm(data_files):
+        with open(os.path.join("datas", data_file), "rb") as f:
+            pixel_data: PixelData = pickle.load(f)
+
+        for x in range(x_max):
+            for y in range(y_max):
+                for p in pixel_data[x][y]:
+                    # offset here technically isn't offset in miliseconds, it is n-frame from start.
+                    # So we use 1000 / fps.
+                    start_offset = music_offset + round(p.offset * 1000 / fps)
+
+                    # TODO: Precision configurator
+                    #       Maybe check if a pixel hasnt changed by like x values? idk
+
+                    # Only do another command if current alpha is different from last alpha.
+                    # This is to avoid duplicate command and save more space.
+                    if last_pixel_data[x][y] != p.rgb:
+                        pixels[x][y].colour(
+                            0, start_offset, start_offset, *p.rgb, *p.rgb
+                        )
+                        last_pixel_data[x][y] = p.rgb
+
+        # Delete pixel data from memory to save memory because we don't use it anymore.
+        del pixel_data
+
+    Osbject.end(output_filename)
+
+
 def generate_osb(
     obj_size: int,
     output_filename,
@@ -38,7 +88,7 @@ def generate_osb(
     music_offset: int = 0,
 ):
     if use_rgb:
-        raise Exception("Pixels cannot use RGB.")
+        return _run_rgb(obj_size, output_filename, fps, precision, True, music_offset)
     tqdm = get_tqdm()
 
     data_files = os.listdir("datas")

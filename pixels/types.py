@@ -1,7 +1,10 @@
-from collections import namedtuple
-from typing import List, TypeVar
+from typing import List, Optional, Tuple, TypeVar, NamedTuple
 
-Point = namedtuple("Point", ["offset", "alpha"])
+
+class Point(NamedTuple):
+    offset: int
+    alpha: Optional[int] = None
+    rgb: Optional[Tuple[int, int, int]] = None
 
 
 T = TypeVar("T")

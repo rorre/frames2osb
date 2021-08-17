@@ -23,6 +23,7 @@ def process_frames(
     obj_size: int,
     bar: "tqdm",
     start_frame: int = 0,
+    use_rgb: bool = False,
 ):
     x_max, y_max, _ = get_max_resolution(obj_size)
 
@@ -39,19 +40,33 @@ def process_frames(
         with Image.open(os.path.join("frames", image_file)) as im:
             im_resized = im.resize((x_max, y_max))
 
-        gray = im_resized.convert("L")
+        if use_rgb:
+            image = im_resized
+        else:
+            image = im_resized.convert("L")
 
         for x in range(x_max):
             for y in range(y_max):
-                # Only add an entry if current alpha is different from last alpha.
-                # Thus we only have timestamps where alpha value is different.
-                current_alpha = int(gray.getpixel((x, y)))
-                if not pixel_data[x][y] or pixel_data[x][y][-1].alpha != current_alpha:
-                    pixel_data[x][y].append(Point(start_frame + i, current_alpha))
+                px = pixel_data[x][y]
+
+                # Only add an entry if current value is different from last value.
+                # Thus we only have timestamps where the values are different.
+                if use_rgb:
+                    current_rgb = image.getpixel((x, y))
+                    if not px or px[-1].rgb != current_rgb:
+                        pixel_data[x][y].append(
+                            Point(offset=start_frame + i, rgb=current_rgb)
+                        )
+                else:
+                    current_alpha = int(image.getpixel((x, y)))
+                    if not px or px[-1].alpha != current_alpha:
+                        pixel_data[x][y].append(
+                            Point(offset=start_frame + i, alpha=current_alpha)
+                        )
 
         # Delete from memory to save space.
         del im_resized
-        del gray
+        del image
         bar.update(1)
 
     # While using json is viable, pickle saves much more disk space and time.
@@ -63,8 +78,6 @@ def process_frames(
 
 
 def run(obj_size, use_rgb: bool = False, number_of_thread=2, number_of_splits=16):
-    if use_rgb:
-        raise Exception("Pixels cannot use RGB.")
     tqdm = get_tqdm()
 
     try:
@@ -77,13 +90,7 @@ def run(obj_size, use_rgb: bool = False, number_of_thread=2, number_of_splits=16
         for i, arr in enumerate(chunks(all_image_files, nchunk)):
             pool.apply_async(
                 process_frames,
-                args=(
-                    arr,
-                    f"datas/data_{i}.dat",
-                    obj_size,
-                    pbar,
-                    nchunk * i,
-                ),
+                args=(arr, f"datas/data_{i}.dat", obj_size, pbar, nchunk * i, use_rgb),
             )
 
         pool.close()
