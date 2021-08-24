@@ -6,7 +6,7 @@ from osbpy import Osbject
 
 from helper import get_max_resolution, get_tqdm, sort_datas
 
-from .types import PixelData, PixelValue
+from frames2osb.pixels.types import PixelData, PixelValue
 
 
 def generate_pixels(obj_size: int) -> PixelValue[Osbject]:

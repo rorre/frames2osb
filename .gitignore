@@ -139,6 +139,7 @@ cython_debug/
 
 *.osb
 datas/
-frames*
+frames
+frames-*
 *.mp4
 .vscode

@@ -6,7 +6,7 @@ from osbpy import Osbject
 
 from helper import get_max_resolution, get_tqdm, sort_datas
 
-from .types import FrameData, PixelData, QuadNode
+from frames2osb.quadtree.types import FrameData, PixelData, QuadNode
 
 USE_AMOGUS = False
 

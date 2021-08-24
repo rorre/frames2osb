@@ -9,7 +9,7 @@ from PIL import Image
 
 from helper import chunks, get_max_resolution, get_tqdm, sort_image_files
 
-from .types import FrameData, QuadNode
+from frames2osb.quadtree.types import FrameData, QuadNode
 
 if TYPE_CHECKING:
     from tqdm import tqdm

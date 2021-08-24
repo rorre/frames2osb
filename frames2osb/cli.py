@@ -20,13 +20,13 @@ class CLIParser(Tap):
         self.description = "Generate storyboard for Bad Apple."
 
 
-if __name__ == "__main__":
+def main():
     args = CLIParser().parse_args()
 
     if args.use_pixels:
-        from pixels import osb, pixel_extract
+        from frames2osb.pixels import osb, pixel_extract
     else:
-        from quadtree import osb, pixel_extract
+        from frames2osb.quadtree import osb, pixel_extract
 
     if not args.use_pixels and args.size >= 7:
         raise Exception("Can not use 7 or more for quadtree quality settings.")
