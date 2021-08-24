@@ -7,8 +7,7 @@ from typing import TYPE_CHECKING, List
 import numpy as np
 from PIL import Image
 
-from helper import chunks, get_max_resolution, get_tqdm, sort_image_files
-
+from frames2osb.helper import chunks, get_max_resolution, get_tqdm, sort_image_files
 from frames2osb.quadtree.types import FrameData, QuadNode
 
 if TYPE_CHECKING:

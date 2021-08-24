@@ -4,8 +4,7 @@ from typing import Tuple
 
 from osbpy import Osbject
 
-from helper import get_max_resolution, get_tqdm, sort_datas
-
+from frames2osb.helper import get_max_resolution, get_tqdm, sort_datas
 from frames2osb.pixels.types import PixelData, PixelValue
 
 

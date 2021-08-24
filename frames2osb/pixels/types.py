@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple, TypeVar, NamedTuple
+from typing import List, NamedTuple, Optional, Tuple, TypeVar
 
 
 class Point(NamedTuple):

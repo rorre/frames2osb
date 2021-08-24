@@ -6,8 +6,7 @@ from typing import TYPE_CHECKING, List
 
 from PIL import Image
 
-from helper import chunks, get_max_resolution, get_tqdm, sort_image_files
-
+from frames2osb.helper import chunks, get_max_resolution, get_tqdm, sort_image_files
 from frames2osb.pixels.types import PixelData, Point
 
 if TYPE_CHECKING:
