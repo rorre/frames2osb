@@ -19,7 +19,7 @@ def generate_pixels(obj_size: int) -> PixelValue[Osbject]:
         pixels.append([])
         for y in range(y_max):
             obj = Osbject(
-                "dot.png",
+                "res/dot.png",
                 "Background",
                 "Centre",
                 -x_shift + obj_offset + x * obj_size,
