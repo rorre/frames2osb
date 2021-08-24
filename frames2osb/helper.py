@@ -1,9 +1,13 @@
 import math
 import os
+from typing import TYPE_CHECKING
 import warnings
 from functools import cache
 
 from PIL import Image
+
+if TYPE_CHECKING:
+    from IPython import get_ipython
 
 
 def sort_datas(filename):
