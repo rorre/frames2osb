@@ -8,7 +8,7 @@ import numpy as np
 from PIL import Image
 
 from frames2osb.helper import chunks, get_max_resolution, get_tqdm, sort_image_files
-from frames2osb.quadtree.types import FrameData, QuadNode
+from frames2osb.quadtree.typings import FrameData, QuadNode
 
 if TYPE_CHECKING:
     from tqdm import tqdm

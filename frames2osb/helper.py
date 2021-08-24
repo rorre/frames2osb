@@ -1,6 +1,6 @@
 import math
 import os
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Tuple
 import warnings
 from functools import cache
 
@@ -8,9 +8,10 @@ from PIL import Image
 
 if TYPE_CHECKING:
     from IPython import get_ipython
+    from tqdm import tqdm
 
 
-def sort_datas(filename):
+def sort_datas(filename: str) -> int:
     return int(os.path.splitext(filename)[0].split("_")[1])
 
 
@@ -19,7 +20,7 @@ def sort_image_files(f1: str) -> int:
 
 
 @cache
-def get_max_resolution(obj_size: int):
+def get_max_resolution(obj_size: int) -> Tuple[int, int, int]:
     im_file = os.listdir("frames")[0]
     with Image.open(os.path.join("frames", im_file)) as im:
         x_original, y_original = im.size
@@ -37,13 +38,13 @@ def get_max_resolution(obj_size: int):
 
 
 # https://stackoverflow.com/a/312464
-def chunks(lst, n):
+def chunks(lst: List, n: int):
     """Yield successive n-sized chunks from lst."""
     for i in range(0, len(lst), n):
         yield lst[i : i + n]  # noqa
 
 
-def get_tqdm():
+def get_tqdm() -> "tqdm":
     try:
         get_ipython()
         from tqdm.notebook import tqdm
