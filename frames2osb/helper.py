@@ -1,6 +1,6 @@
 import math
 import os
-from typing import TYPE_CHECKING, List, Tuple
+from typing import TYPE_CHECKING, List, Tuple, TypeVar
 import warnings
 from functools import cache
 
@@ -9,6 +9,8 @@ from PIL import Image
 if TYPE_CHECKING:
     from IPython import get_ipython
     from tqdm import tqdm
+
+T = TypeVar("T")
 
 
 def sort_datas(filename: str) -> int:
@@ -38,7 +40,7 @@ def get_max_resolution(obj_size: int) -> Tuple[int, int, int]:
 
 
 # https://stackoverflow.com/a/312464
-def chunks(lst: List, n: int):
+def chunks(lst: List[T], n: int):
     """Yield successive n-sized chunks from lst."""
     for i in range(0, len(lst), n):
         yield lst[i : i + n]  # noqa
