@@ -272,6 +272,14 @@ typing_extensions = ">=3.7.4"
 typing-inspect = ">=0.7.1"
 
 [[package]]
+name = "types-pillow"
+version = "8.3.3"
+description = "Typing stubs for Pillow"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "typing-extensions"
 version = "3.10.0.0"
 description = "Backported and Experimental Type Hints for Python 3.5+"
@@ -294,7 +302,7 @@ typing-extensions = ">=3.7.4"
 [metadata]
 lock-version = "1.1"
 python-versions = ">3.8,<3.11"
-content-hash = "d84b8f6437c62738f4b0cecea3cfc12815561d77e812d893cee2b028c8910fa4"
+content-hash = "38b955be2cf56ba5ff85ad6dbec09c5d4a63d8b3452409de4b55707a57575bd2"
 
 [metadata.files]
 appdirs = [
@@ -589,6 +597,10 @@ tqdm = [
 ]
 typed-argument-parser = [
     {file = "typed-argument-parser-1.7.1.tar.gz", hash = "sha256:b5f8c3e13e993d457218c7cb961588f3662efdd301681034b08a8f42c5e9d802"},
+]
+types-pillow = [
+    {file = "types-Pillow-8.3.3.tar.gz", hash = "sha256:056b5385167284555714ab499ac2a4f81f6bbb9babf9e5b24c886e6c54ddc6ef"},
+    {file = "types_Pillow-8.3.3-py3-none-any.whl", hash = "sha256:54de6632d031f1cdde670182c5aedbddf5427418acf8325235d6767f9214355b"},
 ]
 typing-extensions = [
     {file = "typing_extensions-3.10.0.0-py2-none-any.whl", hash = "sha256:0ac0f89795dd19de6b97debb0c6af1c70987fd80a2d62d1958f7e56fcc31b497"},
