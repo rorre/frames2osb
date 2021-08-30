@@ -26,7 +26,7 @@ def process_frames(
     use_rgb: bool = False,
 ):
     x_max, y_max, _ = get_max_resolution(1)
-    max_depth = 7 - quality
+    max_depth = quality
 
     quad_frames: List[FrameData] = []
     for i in range(len(image_files)):

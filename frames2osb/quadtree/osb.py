@@ -59,7 +59,7 @@ def generate_particles(
     if key not in children_keys:
         children_keys[key] = []
 
-    if qtree.final or qtree._depth == 7 - quality:
+    if qtree.final or qtree._depth == quality:
         # Recursively disable ALL childs (that means also disable child of child)
         disable_childs(key, start_offset)
         if key not in pixels:
@@ -122,15 +122,16 @@ def generate_particles(
             pixels[key].alpha = 0
 
         for q in (qtree.tl, qtree.tr, qtree.bl, qtree.br):
-            generate_particles(
-                quality,
-                FrameData(frame.offset, q),
-                fps,
-                precision,
-                use_rgb,
-                music_offset,
-                key,
-            )
+            if q:
+                generate_particles(
+                    quality,
+                    FrameData(frame.offset, q),
+                    fps,
+                    precision,
+                    use_rgb,
+                    music_offset,
+                    key,
+                )
 
 
 def generate_osb(
