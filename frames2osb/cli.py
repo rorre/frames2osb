@@ -117,5 +117,7 @@ def main():
 
     if args.method == "pixels":
         pixels(args)
-    else:
+    elif args.method == "quadtree":
         quadtree(args)
+    else:
+        args.print_help()
