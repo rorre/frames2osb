@@ -2,7 +2,7 @@ import os
 import pickle
 from typing import Dict, List, cast
 
-from osbpy import Osbject
+from frames2osb.external.osbpy import Osbject
 
 from frames2osb.helper import get_max_resolution, get_tqdm, sort_datas
 from frames2osb.quadtree.typings import FrameData, PixelData, QuadNode
