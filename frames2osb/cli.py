@@ -2,6 +2,8 @@ from typing import TYPE_CHECKING, Literal, Optional, cast
 from tap import Tap
 import argparse
 
+from frames2osb.convert import convert_video
+
 
 class QualityAction(argparse.Action):
     def __call__(  # type: ignore
@@ -57,6 +59,7 @@ class QuadTreeParser(CommonParser):
 class CLIParser(Tap):
     if TYPE_CHECKING:
         method: Literal["pixels", "quadtree"]
+    video: Optional[str] = None
 
     def configure(self) -> None:
         self.add_subparsers(required=True, dest="method")
@@ -122,6 +125,10 @@ def quadtree(orig_args: CLIParser):
 
 def main():
     args = CLIParser(prog="frames2osb").parse_args()
+
+    if args.video:
+        fps = convert_video(args.video)
+        args.fps = fps
 
     if args.method == "pixels":
         pixels(args)
