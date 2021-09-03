@@ -5,7 +5,7 @@ from typing import List, NamedTuple, Optional, Union
 
 import numpy as np
 from numpy.typing import NDArray
-from osbpy import Osbject
+from frames2osb.external.osbpy import Osbject
 
 ImageArray = NDArray[np.int32]
 
