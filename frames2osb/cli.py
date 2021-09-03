@@ -59,9 +59,17 @@ class CLIParser(Tap):
         method: Literal["pixels", "quadtree"]
 
     def configure(self) -> None:
-        self.add_subparsers(help="sub-command help", dest="method")
-        self.add_subparser("pixels", PixelParser)
-        self.add_subparser("quadtree", QuadTreeParser)
+        self.add_subparsers(required=True, dest="method")
+        self.add_subparser(
+            "pixels",
+            PixelParser,
+            help="Generate storyboard using pixel by pixel.",
+        )
+        self.add_subparser(
+            "quadtree",
+            QuadTreeParser,
+            help="Generate storybord using quadtree.",
+        )
 
 
 def pixels(orig_args: CLIParser):
