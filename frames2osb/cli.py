@@ -121,7 +121,7 @@ def quadtree(orig_args: CLIParser):
 
 
 def main():
-    args = CLIParser().parse_args()
+    args = CLIParser(prog="frames2osb").parse_args()
 
     if args.method == "pixels":
         pixels(args)
