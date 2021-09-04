@@ -183,7 +183,7 @@ class Osbject:
         if loop:
             leading += " "
 
-        def _convert(v: Iterable[Union[str, float, OsbEasing]]):
+        def _convert(v: Union[str, float, OsbEasing]) -> str:
             if isinstance(v, OsbEasing):
                 return str(v.value)
             return str(v)
