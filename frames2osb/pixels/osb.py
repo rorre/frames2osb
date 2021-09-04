@@ -47,7 +47,7 @@ def _run_rgb(
     for x in range(x_max):
         last_pixel_data.append([])
         for y in range(y_max):
-            last_pixel_data[x].append(None)
+            last_pixel_data[x].append((-255, -255, -255))
 
     for data_file in tqdm(data_files):
         with open(os.path.join("datas", data_file), "rb") as f:
@@ -56,6 +56,10 @@ def _run_rgb(
         for x in range(x_max):
             for y in range(y_max):
                 for p in pixel_data[x][y]:
+                    # Assert to ensure RGB is not None
+                    # ...and to make mypy happy.
+                    assert p.rgb
+
                     # offset here technically isn't offset in miliseconds, it is n-frame from start.
                     # So we use 1000 / fps.
                     start_offset = music_offset + round(p.offset * 1000 / fps)
@@ -102,7 +106,7 @@ def generate_osb(
     for x in range(x_max):
         last_alpha_data.append([])
         for y in range(y_max):
-            last_alpha_data[x].append(None)
+            last_alpha_data[x].append(-1)
 
     for data_file in tqdm(data_files):
         with open(os.path.join("datas", data_file), "rb") as f:
@@ -111,6 +115,10 @@ def generate_osb(
         for x in range(x_max):
             for y in range(y_max):
                 for p in pixel_data[x][y]:
+                    # Assert to ensure Alpha is not None
+                    # ...and to make mypy happy.
+                    assert p.alpha
+
                     # offset here technically isn't offset in miliseconds, it is n-frame from start.
                     # So we use 1000 / fps.
                     start_offset = music_offset + round(p.offset * 1000 / fps)
