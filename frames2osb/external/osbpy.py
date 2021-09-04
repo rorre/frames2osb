@@ -175,7 +175,7 @@ class Osbject:
 
         self._init = True
 
-    def add(self, args: Iterable[Union[str, float]], loop=False):
+    def add(self, args: Iterable[Union[str, float, OsbEasing]], loop=False):
         leading = ""
         if self._init:
             leading += " "
@@ -183,7 +183,12 @@ class Osbject:
         if loop:
             leading += " "
 
-        props_string = leading + ",".join(map(str, args))
+        def _convert(v: Iterable[Union[str, float, OsbEasing]]):
+            if isinstance(v, OsbEasing):
+                return str(v.value)
+            return str(v)
+
+        props_string = leading + ",".join(map(_convert, args))
         self.props.append(props_string)
 
     def fade(
