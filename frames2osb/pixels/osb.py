@@ -1,12 +1,10 @@
-from frames2osb.external.typings import OsbEasing
 import os
 import pickle
 from typing import Tuple
 
-from tqdm.auto import tqdm
-
 from frames2osb.external.osbpy import Osbject
-from frames2osb.helper import get_max_resolution, sort_datas
+from frames2osb.external.typings import OsbEasing
+from frames2osb.helper import ListProgressBar, get_max_resolution, sort_datas
 from frames2osb.pixels.typings import PixelData, PixelValue
 
 
@@ -50,7 +48,7 @@ def _run_rgb(
         for y in range(y_max):
             last_pixel_data[x].append((-255, -255, -255))
 
-    for data_file in tqdm(data_files):
+    for data_file in ListProgressBar(data_files):
         with open(os.path.join("datas", data_file), "rb") as f:
             pixel_data: PixelData = pickle.load(f)
 
@@ -113,7 +111,7 @@ def generate_osb(
         for y in range(y_max):
             last_alpha_data[x].append(-1)
 
-    for data_file in tqdm(data_files):
+    for data_file in ListProgressBar(data_files):
         with open(os.path.join("datas", data_file), "rb") as f:
             pixel_data: PixelData = pickle.load(f)
 
@@ -122,7 +120,7 @@ def generate_osb(
                 for p in pixel_data[x][y]:
                     # Assert to ensure Alpha is not None
                     # ...and to make mypy happy.
-                    assert p.alpha
+                    assert p.alpha is not None
 
                     # offset here technically isn't offset in miliseconds, it is n-frame from start.
                     # So we use 1000 / fps.

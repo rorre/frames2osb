@@ -6,9 +6,13 @@ from typing import List
 
 import numpy as np
 from PIL import Image
-from tqdm.auto import tqdm
 
-from frames2osb.helper import chunks, get_max_resolution, sort_image_files
+from frames2osb.helper import (
+    SimpleProgressBar,
+    chunks,
+    get_max_resolution,
+    sort_image_files,
+)
 from frames2osb.quadtree.typings import FrameData, QuadNode
 
 all_image_files = os.listdir("frames")
@@ -19,7 +23,7 @@ def process_frames(
     image_files: List[str],
     filename: str,
     quality: int,
-    bar: "tqdm",
+    bar: SimpleProgressBar,
     start_frame: int = 0,
     use_rgb: bool = False,
 ):
@@ -54,7 +58,9 @@ def run(quality: int, use_rgb: bool = False, number_of_thread=2, number_of_split
     except FileNotFoundError:
         pass
     os.makedirs("datas", exist_ok=True)
-    with ThreadPool(number_of_thread) as pool, tqdm(total=len(all_image_files)) as pbar:
+
+    pbar = SimpleProgressBar(total=len(all_image_files))
+    with ThreadPool(number_of_thread) as pool:
         nchunk = len(all_image_files) // number_of_splits
         for i, arr in enumerate(chunks(all_image_files, nchunk)):
             pool.apply_async(

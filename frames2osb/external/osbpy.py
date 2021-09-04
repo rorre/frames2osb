@@ -31,7 +31,8 @@ https://github.com/KawaiiWafu/osbpy
 """
 import os
 from typing import Iterable, List, Literal, Optional, Union
-from frames2osb.external.typings import Origin, Layer, Loop, OsbEasing
+
+from frames2osb.external.typings import Layer, Loop, Origin, OsbEasing
 
 
 def check_path(path: str):

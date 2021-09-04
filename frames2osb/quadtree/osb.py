@@ -1,12 +1,10 @@
-from frames2osb.external.typings import OsbEasing
 import os
 import pickle
 from typing import Dict, List, Tuple, cast
 
-from tqdm.auto import tqdm
-
 from frames2osb.external.osbpy import Osbject
-from frames2osb.helper import get_max_resolution, sort_datas
+from frames2osb.external.typings import OsbEasing
+from frames2osb.helper import ListProgressBar, get_max_resolution, sort_datas
 from frames2osb.quadtree.typings import FrameData, PixelData, QuadNode
 
 USE_AMOGUS = False
@@ -158,7 +156,7 @@ def generate_osb(
     data_files = os.listdir("datas")
     data_files.sort(key=sort_datas)
 
-    for data_file in tqdm(data_files):
+    for data_file in ListProgressBar(data_files):
         with open(os.path.join("datas", data_file), "rb") as f:
             frame_data: List[FrameData] = pickle.load(f)
 
