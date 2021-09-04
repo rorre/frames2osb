@@ -2,9 +2,10 @@ import os
 import pickle
 from typing import Tuple
 
+from tqdm.auto import tqdm
 from frames2osb.external.osbpy import Osbject
 
-from frames2osb.helper import get_max_resolution, get_tqdm, sort_datas
+from frames2osb.helper import get_max_resolution, sort_datas
 from frames2osb.pixels.typings import PixelData, PixelValue
 
 
@@ -37,8 +38,6 @@ def _run_rgb(
     use_rgb: bool = False,
     music_offset: int = 0,
 ):
-    tqdm = get_tqdm()
-
     data_files = os.listdir("datas")
     data_files.sort(key=sort_datas)
     pixels = generate_pixels(obj_size)
@@ -88,7 +87,6 @@ def generate_osb(
 ):
     if use_rgb:
         return _run_rgb(obj_size, output_filename, fps, precision, True, music_offset)
-    tqdm = get_tqdm()
 
     data_files = os.listdir("datas")
     data_files.sort(key=sort_datas)

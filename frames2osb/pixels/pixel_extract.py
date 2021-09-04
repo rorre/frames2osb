@@ -2,15 +2,13 @@ import os
 import pickle
 import shutil
 from multiprocessing.pool import ThreadPool
-from typing import TYPE_CHECKING, List
-
+from typing import List
+from tqdm.auto import tqdm
 from PIL import Image
 
-from frames2osb.helper import chunks, get_max_resolution, get_tqdm, sort_image_files
+from frames2osb.helper import chunks, get_max_resolution, sort_image_files
 from frames2osb.pixels.typings import PixelData, Point
 
-if TYPE_CHECKING:
-    from tqdm import tqdm
 
 all_image_files = os.listdir("frames")
 all_image_files.sort(key=sort_image_files)
@@ -77,8 +75,6 @@ def process_frames(
 
 
 def run(obj_size, use_rgb: bool = False, number_of_thread=2, number_of_splits=16):
-    tqdm = get_tqdm()
-
     try:
         shutil.rmtree("datas")
     except FileNotFoundError:

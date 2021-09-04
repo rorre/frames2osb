@@ -1,10 +1,10 @@
 import os
 import pickle
 from typing import Dict, List, cast
-
+from tqdm.auto import tqdm
 from frames2osb.external.osbpy import Osbject
 
-from frames2osb.helper import get_max_resolution, get_tqdm, sort_datas
+from frames2osb.helper import get_max_resolution, sort_datas
 from frames2osb.quadtree.typings import FrameData, PixelData, QuadNode
 
 USE_AMOGUS = False
@@ -142,8 +142,6 @@ def generate_osb(
     use_rgb: bool = False,
     music_offset: int = 0,
 ):
-    tqdm = get_tqdm()
-
     data_files = os.listdir("datas")
     data_files.sort(key=sort_datas)
 
