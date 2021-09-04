@@ -1,3 +1,4 @@
+from frames2osb.external.typings import OsbEasing
 import os
 import pickle
 from typing import Tuple
@@ -25,7 +26,7 @@ def generate_pixels(obj_size: int) -> PixelValue[Osbject]:
                 -x_shift + obj_offset + x * obj_size,
                 obj_offset + y * obj_size,
             )
-            obj.scale(0, -1, -1, 1, obj_size)
+            obj.scale(OsbEasing.NoEasing, -1, -1, 1, obj_size)
             pixels[x].append(obj)
     return pixels
 
@@ -71,7 +72,11 @@ def _run_rgb(
                     # This is to avoid duplicate command and save more space.
                     if last_pixel_data[x][y] != p.rgb:
                         pixels[x][y].colour(
-                            0, start_offset, start_offset, *p.rgb, *p.rgb
+                            OsbEasing.NoEasing,
+                            start_offset,
+                            start_offset,
+                            *p.rgb,
+                            *p.rgb
                         )
                         last_pixel_data[x][y] = p.rgb
 
@@ -127,7 +132,9 @@ def generate_osb(
                     # Only do another command if current alpha is different from last alpha.
                     # This is to avoid duplicate command and save more space.
                     if last_alpha_data[x][y] != alpha:
-                        pixels[x][y].fade(0, start_offset, start_offset, alpha, alpha)
+                        pixels[x][y].fade(
+                            OsbEasing.NoEasing, start_offset, start_offset, alpha, alpha
+                        )
                         last_alpha_data[x][y] = alpha
 
         # Delete pixel data from memory to save memory because we don't use it anymore.

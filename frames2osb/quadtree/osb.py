@@ -1,6 +1,7 @@
+from frames2osb.external.typings import OsbEasing
 import os
 import pickle
-from typing import Dict, List, cast
+from typing import Dict, List, Tuple, cast
 
 from tqdm.auto import tqdm
 
@@ -17,7 +18,7 @@ children_keys: Dict[str, List[str]] = {}
 def disable_childs(key: str, offset: int):
     for k in children_keys[key]:
         if k in pixels and pixels[k].alpha != 0:
-            pixels[k].osb.fade(0, offset, offset, 0, 0)
+            pixels[k].osb.fade(OsbEasing.NoEasing, offset, offset, 0, 0)
             pixels[k].alpha = 0
         disable_childs(k, offset)
 
@@ -80,7 +81,7 @@ def generate_particles(
                         "LoopForever",
                     ),
                 )
-                pixels[key].osb.scale(0, 0, 0, 1, qtree.h / 1024)
+                pixels[key].osb.scale(OsbEasing.NoEasing, 0, 0, 1, qtree.h / 1024)
             else:
                 pixels[key] = PixelData(
                     -1,
@@ -93,21 +94,30 @@ def generate_particles(
                         qtree.y,
                     ),
                 )
-                pixels[key].osb.vecscale(0, 0, 0, 1, 1, qtree.w + 1, qtree.h + 1)
-            pixels[key].osb.fade(0, 0, 0, 0, 0)
+                pixels[key].osb.vecscale(
+                    OsbEasing.NoEasing, 0, 0, 1, 1, qtree.w + 1, qtree.h + 1
+                )
+            pixels[key].osb.fade(OsbEasing.NoEasing, 0, 0, 0, 0)
 
         if use_rgb:
-            mean_rgb = cast(List[int], qtree.mean)
+            mean_rgb = cast(Tuple[int, int, int], qtree.mean)
 
-            minimum_delta = 0
+            if precision <= 0:
+                minimum_delta = 0.0
+            else:
+                minimum_delta = 10 / max(1, min(10, precision)) * 15
+
             rgb_total = sum(mean_rgb)
             if abs(rgb_total - pixels[key].rgb) > minimum_delta:
                 pixels[key].rgb = rgb_total
                 pixels[key].osb.colour(
-                    0, start_offset, start_offset, *mean_rgb, *mean_rgb
+                    OsbEasing.NoEasing, start_offset, start_offset, *mean_rgb, *mean_rgb
                 )
+
             if pixels[key].alpha <= 0:
-                pixels[key].osb.fade(0, start_offset, start_offset, 1, 1)
+                pixels[key].osb.fade(
+                    OsbEasing.NoEasing, start_offset, start_offset, 1, 1
+                )
                 pixels[key].alpha = 1
         else:
             mean_alpha = cast(int, qtree.mean)
@@ -115,11 +125,13 @@ def generate_particles(
 
             if pixels[key].alpha != alpha:
                 pixels[key].alpha = alpha
-                pixels[key].osb.fade(0, start_offset, start_offset, alpha, alpha)
+                pixels[key].osb.fade(
+                    OsbEasing.NoEasing, start_offset, start_offset, alpha, alpha
+                )
     else:
         # Disable ourselves if any of our child is turning on.
         if key in pixels and pixels[key].alpha != 0:
-            pixels[key].osb.fade(0, start_offset, start_offset, 0, 0)
+            pixels[key].osb.fade(OsbEasing.NoEasing, start_offset, start_offset, 0, 0)
             pixels[key].alpha = 0
 
         for q in (qtree.tl, qtree.tr, qtree.bl, qtree.br):
