@@ -3,12 +3,12 @@ import pickle
 import shutil
 from multiprocessing.pool import ThreadPool
 from typing import List
-from tqdm.auto import tqdm
+
 from PIL import Image
+from tqdm.auto import tqdm
 
 from frames2osb.helper import chunks, get_max_resolution, sort_image_files
 from frames2osb.pixels.typings import PixelData, Point
-
 
 all_image_files = os.listdir("frames")
 all_image_files.sort(key=sort_image_files)

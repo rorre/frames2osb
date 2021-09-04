@@ -1,8 +1,8 @@
 import math
 import os
-from typing import List, Tuple, TypeVar
 import warnings
 from functools import cache
+from typing import List, Tuple, TypeVar
 
 from PIL import Image
 

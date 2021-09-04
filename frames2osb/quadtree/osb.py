@@ -1,9 +1,10 @@
 import os
 import pickle
 from typing import Dict, List, cast
-from tqdm.auto import tqdm
-from frames2osb.external.osbpy import Osbject
 
+from tqdm.auto import tqdm
+
+from frames2osb.external.osbpy import Osbject
 from frames2osb.helper import get_max_resolution, sort_datas
 from frames2osb.quadtree.typings import FrameData, PixelData, QuadNode
 

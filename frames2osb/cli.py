@@ -1,6 +1,7 @@
-from typing import TYPE_CHECKING, Literal, Optional, cast
-from tap import Tap
 import argparse
+from typing import TYPE_CHECKING, Literal, Optional, cast
+
+from tap import Tap
 
 from frames2osb.convert import convert_video
 

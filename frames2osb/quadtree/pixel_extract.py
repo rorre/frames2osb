@@ -11,7 +11,6 @@ from tqdm.auto import tqdm
 from frames2osb.helper import chunks, get_max_resolution, sort_image_files
 from frames2osb.quadtree.typings import FrameData, QuadNode
 
-
 all_image_files = os.listdir("frames")
 all_image_files.sort(key=sort_image_files)
 

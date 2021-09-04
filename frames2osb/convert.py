@@ -1,10 +1,10 @@
 import json
-from pathlib import Path
+import os
+import shutil
 import subprocess
 import sys
-from typing import Optional, List, Literal, TypedDict, Union
-import shutil
-import os
+from pathlib import Path
+from typing import List, Literal, Optional, TypedDict, Union
 
 FFPROBE_CMD = 'ffprobe -v quiet -print_format json -show_format -show_streams "{0}"'
 FFMPEG_CMD = 'ffmpeg -i "{0}" -r 30 frames/%03d.jpg'
