@@ -98,7 +98,9 @@ def generate_particles(
             pixels[key].osb.fade(OsbEasing.NoEasing, 0, 0, 0, 0)
 
         if use_rgb:
-            mean_rgb = cast(Tuple[int, int, int], qtree.mean)
+            # Cast hell because mypy
+            list_rgb = cast(List[int], qtree.mean.tolist())
+            mean_rgb = cast(Tuple[int, int, int], tuple(list_rgb))
 
             if precision <= 0:
                 minimum_delta = 0.0
@@ -118,7 +120,7 @@ def generate_particles(
                 )
                 pixels[key].alpha = 1
         else:
-            mean_alpha = cast(int, qtree.mean)
+            mean_alpha = cast(int, qtree.mean.item())
             alpha = round(mean_alpha / 255, precision)
 
             if pixels[key].alpha != alpha:

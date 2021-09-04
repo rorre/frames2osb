@@ -26,7 +26,7 @@ class PixelData:
 # Code starting here are taken from
 # https://medium.com/analytics-vidhya/transform-an-image-into-a-quadtree-39b3aa6e019a
 # with quite a number of modification to fit my purpose.
-def calculate_mean(img: ImageArray) -> Union[int, ImageArray]:
+def calculate_mean(img: ImageArray) -> Union[np.int32, ImageArray]:
     return np.mean(img, axis=(0, 1), dtype=np.int32)
 
 

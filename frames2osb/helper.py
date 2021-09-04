@@ -4,7 +4,7 @@ import shutil
 import sys
 import warnings
 from functools import cache
-from typing import List, Tuple, TypeVar
+from typing import List, Tuple, TypeVar, Generic
 
 from PIL import Image
 
@@ -73,7 +73,7 @@ class SimpleProgressBar:
         self.print_progress()
 
 
-class ListProgressBar(SimpleProgressBar, List[T]):
+class ListProgressBar(SimpleProgressBar, Generic[T]):
     def __init__(self, arr: List[T]):
         super().__init__(len(arr))
         self.arr = arr
