@@ -1,36 +1,51 @@
-import os
-from typing import Iterable, List, Literal, Optional
+"""
+MIT License
 
-Origin = Literal[
-    "TopLeft",
-    "TopCentre",
-    "TopRight",
-    "CentreLeft",
-    "Centre",
-    "CentreRight",
-    "BottomLeft",
-    "BottomCentre",
-    "BottomRight",
-]
-Layer = Literal["Background", "Fail", "Pass", "Foreground"]
-Loop = Literal["LoopForever", "LoopOnce"]
+Copyright (c) 2017 Jiří Olszar
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+--------------------
+
+This is Wafu's osbpy, however I have reworked it to have static typing
+and have rewritten parts of it to be more easily readable (hopefully)
+
+Original repository is available here:
+https://github.com/KawaiiWafu/osbpy
+"""
+import os
+from typing import Iterable, List, Literal, Optional, Union
+from frames2osb.external.typings import Origin, Layer, Loop, OsbEasing
 
 
 def check_path(path: str):
-    if type(path) is not str:
-        print("{val} is an invalid path.".format(val=path))
-        return False
+    if not isinstance(path, str):
+        raise ValueError("{val} is an invalid path.".format(val=path))
     return True
 
 
 def check_layer(layer: Layer):
     if layer not in ("Background", "Fail", "Pass", "Foreground"):
-        print(
-            "{val} is an invalid layer. Valid: Background, Fail, Pass, Foreground".format(
-                val=layer
-            )
+        raise ValueError(
+            "{val} is an invalid layer. ".format(val=layer)
+            + "Valid values: Background, Fail, Pass, Foreground"
         )
-        return False
     return True
 
 
@@ -46,80 +61,62 @@ def check_origin(origin: Origin):
         "BottomCentre",
         "BottomRight",
     ):
-        print(
-            "{val} is an invalid origin. Valid: TopLeft, TopCentre, TopRight, CentreLeft, Centre, CentreRight,"
-            "BottomLeft, BottomCentre, BottomRight".format(val=origin)
-        )
-        return False
+        raise ValueError("{val} is an invalid origin.".format(val=origin))
     return True
 
 
-def check_easing(easing: int):
-    if easing not in range(35):
-        print("{val} is an invalid easing. Valid: Integers 0 - 34".format(val=easing))
-        return False
+def check_easing(easing: OsbEasing):
+    if easing not in [item.value for item in OsbEasing]:
+        raise ValueError("{val} is an invalid easing.".format(val=easing))
     return True
 
 
 def check_loop(loop: Loop):
     if loop not in ("LoopForever", "LoopOnce"):
-        print(
-            "{val} is an invalid loop type. Valid: LoopForever, LoopOnce".format(
-                val=loop
-            )
-        )
-        return False
+        raise ValueError("{val} is an invalid loop type.".format(val=loop))
     return True
 
 
 def check_float(dec: float):
     if not (isinstance(dec, int) or isinstance(dec, float)):
-        print("{val} is not a decimal or an integer.".format(val=dec))
-        return False
+        raise TypeError("{val} is not a decimal or an integer.".format(val=dec))
     return True
 
 
-def check_time(start: float, end: float):
+def check_time(start: float, end: float) -> Literal[True]:
     if not (isinstance(start, float) or isinstance(start, int)):
-        print("Time {val} is not float.".format(val=start))
-        return False
+        raise TypeError("Time {val} is not float.".format(val=start))
+
     if not (isinstance(end, float) or isinstance(end, int)):
-        print("Time {val} is not float.".format(val=end))
-        return False
+        raise TypeError("Time {val} is not float.".format(val=end))
 
     if end < start:
-        print(
-            "End time {val1} is greater than start time {val2}.".format(
-                val1=end, val2=start
-            )
+        raise ValueError(
+            "Start time {0} is greater than end time {1}.".format(start, end)
         )
-        return False
     return True
 
 
 def check_colours(args: Iterable[int]):
     for color in args:
         if color not in range(256):
-            print("{val} is an invalid color. Valid: 0 - 255".format(val=color))
-            return False
+            raise ValueError("{val} is an invalid color.".format(val=color))
     return True
 
 
 def check_parameter(parameter: str):
     if parameter not in ("H", "V", "A"):
-        print("{val} is an invalid Parameter. Valid: H, V, A".format(val=parameter))
-        return False
+        raise ValueError("{val} is an invalid Parameter.".format(val=parameter))
     return True
 
 
 def check_trigger(trigger: str):
     if trigger not in ("Failing", "Passing") and not trigger.startswith("HitSound"):
-        print(
-            "{val} is an invalid Trigger. Valid: Failing, Passing, HitSound...".format(
-                val=trigger
+        raise ValueError(
+            "{0} is an invalid Trigger. Valid: Failing, Passing, HitSound...".format(
+                trigger
             )
         )
-        return False
     return True
 
 
@@ -134,6 +131,8 @@ class Osbject:
         "Pass": obj_pass,
         "Foreground": obj_foreground,
     }
+
+    _init = False
 
     def __init__(
         self,
@@ -174,17 +173,27 @@ class Osbject:
             tag = "Sprite"
             self.add((tag, layer, origin, path, posx, posy))
 
-    def add(self, args: Iterable):
-        self.props.append(",".join(map(str, args)))
+        self._init = True
+
+    def add(self, args: Iterable[Union[str, float]], loop=False):
+        leading = ""
+        if self._init:
+            leading += " "
+
+        if loop:
+            leading += " "
+
+        props_string = leading + ",".join(map(str, args))
+        self.props.append(props_string)
 
     def fade(
         self,
-        easing: int,
+        easing: OsbEasing,
         start: float,
         end: float,
         start_fade: float,
         end_fade: float,
-        loop: Optional[bool] = False,
+        loop: bool = False,
     ):
         assert (
             check_easing(easing)
@@ -192,30 +201,28 @@ class Osbject:
             and check_float(start_fade)
             and check_float(end_fade)
         )
+        tag = "F"
 
         if start == end:
-            end = ""
-
-        if loop:
-            tag = "\n  F"
+            end_time = ""
         else:
-            tag = "\n F"
+            end_time = str(end)
 
         if start_fade == end_fade:
-            self.add((tag, easing, start, end, start_fade))
+            self.add((tag, easing, start, end_time, start_fade), loop)
         else:
-            self.add((tag, easing, start, end, start_fade, end_fade))
+            self.add((tag, easing, start, end_time, start_fade, end_fade), loop)
 
     def move(
         self,
-        easing: int,
+        easing: OsbEasing,
         start: float,
         end: float,
         start_movex: float,
         start_movey: float,
         end_movex: float,
         end_movey: float,
-        loop: Optional[bool] = False,
+        loop: bool = False,
     ):
         assert (
             check_float(start_movex)
@@ -225,34 +232,33 @@ class Osbject:
             and check_easing(easing)
             and check_time(start, end)
         )
+        tag = "M"
 
         if start == end:
-            end = ""
-
-        if loop:
-            tag = "\n  M"
+            end_time = ""
         else:
-            tag = "\n M"
+            end_time = str(end)
 
         if start_movex == end_movex and start_movey == end_movey:
-            self.add((tag, easing, start, end, start_movex, start_movey))
+            self.add((tag, easing, start, end_time, start_movex, start_movey), loop)
         else:
             self.add(
                 (
                     tag,
                     easing,
                     start,
-                    end,
+                    end_time,
                     start_movex,
                     start_movey,
                     end_movex,
                     end_movey,
-                )
+                ),
+                loop,
             )
 
     def movex(
         self,
-        easing: int,
+        easing: OsbEasing,
         start: float,
         end: float,
         start_movex: float,
@@ -266,29 +272,21 @@ class Osbject:
             and check_float(start_movex)
             and check_float(end_movex)
         )
+        tag = "M" + "Y" if swap else "X"
 
         if start == end:
-            end = ""
-
-        if loop:
-            if swap:
-                tag = "\n  MY"
-            else:
-                tag = "\n  MX"
+            end_time = ""
         else:
-            if swap:
-                tag = "\n MY"
-            else:
-                tag = "\n MX"
+            end_time = str(end)
 
         if start_movex == end_movex:
-            self.add((tag, easing, start, end, start_movex))
+            self.add((tag, easing, start, end_time, start_movex), loop)
         else:
-            self.add((tag, easing, start, end, start_movex, end_movex))
+            self.add((tag, easing, start, end_time, start_movex, end_movex), loop)
 
     def movey(
         self,
-        easing: int,
+        easing: OsbEasing,
         start: float,
         end: float,
         start_movey: float,
@@ -299,7 +297,7 @@ class Osbject:
 
     def scale(
         self,
-        easing: int,
+        easing: OsbEasing,
         start: float,
         end: float,
         start_scale: float,
@@ -312,22 +310,21 @@ class Osbject:
             and check_float(start_scale)
             and check_float(end_scale)
         )
-        if start == end:
-            end = ""
+        tag = "S"
 
-        if loop:
-            tag = "\n  S"
+        if start == end:
+            end_time = ""
         else:
-            tag = "\n S"
+            end_time = str(end)
 
         if start_scale == end_scale:
-            self.add((tag, easing, start, end, start_scale))
+            self.add((tag, easing, start, end_time, start_scale), loop)
         else:
-            self.add((tag, easing, start, end, start_scale, end_scale))
+            self.add((tag, easing, start, end_time, start_scale, end_scale), loop)
 
     def vecscale(
         self,
-        easing: int,
+        easing: OsbEasing,
         start: float,
         end: float,
         start_scalex: float,
@@ -344,34 +341,33 @@ class Osbject:
             and check_easing(easing)
             and check_time(start, end)
         )
+        tag = "V"
 
         if start == end:
-            end = ""
-
-        if loop:
-            tag = "\n  V"
+            end_time = ""
         else:
-            tag = "\n V"
+            end_time = str(end)
 
         if start_scalex == end_scalex and start_scaley == end_scaley:
-            self.add((tag, easing, start, end, start_scalex, start_scaley))
+            self.add((tag, easing, start, end_time, start_scalex, start_scaley), loop)
         else:
             self.add(
                 (
                     tag,
                     easing,
                     start,
-                    end,
+                    end_time,
                     start_scalex,
                     start_scaley,
                     end_scalex,
                     end_scaley,
-                )
+                ),
+                loop,
             )
 
     def rotate(
         self,
-        easing: int,
+        easing: OsbEasing,
         start: float,
         end: float,
         start_rotate: float,
@@ -384,22 +380,21 @@ class Osbject:
             and check_float(start_rotate)
             and check_float(end_rotate)
         )
-        if start == end:
-            end = ""
+        tag = "R"
 
-        if loop:
-            tag = "\n  R"
+        if start == end:
+            end_time = ""
         else:
-            tag = "\n R"
+            end_time = str(end)
 
         if start_rotate == end_rotate:
-            self.add((tag, easing, start, end, start_rotate))
+            self.add((tag, easing, start, end_time, start_rotate), loop)
         else:
-            self.add((tag, easing, start, end, start_rotate, end_rotate))
+            self.add((tag, easing, start, end_time, start_rotate, end_rotate), loop)
 
     def colour(
         self,
-        easing: int,
+        easing: OsbEasing,
         start: float,
         end: float,
         r: int,
@@ -415,41 +410,42 @@ class Osbject:
             and check_time(start, end)
             and check_colours((r, g, b, end_r, end_g, end_b))
         )
-        if start == end:
-            end = ""
+        tag = "C"
 
-        if loop:
-            tag = "\n  C"
+        if start == end:
+            end_time = ""
         else:
-            tag = "\n C"
+            end_time = str(end)
 
         if r == end_r and g == end_g and b == end_b:
-            self.add((tag, easing, start, end, r, g, b))
+            self.add((tag, easing, start, end_time, r, g, b), loop)
         else:
-            self.add((tag, easing, start, end, r, g, b, end_r, end_g, end_b))
+            self.add((tag, easing, start, end_time, r, g, b, end_r, end_g, end_b), loop)
 
-    def para(self, easing: int, start: float, end: float, parameter: str):
+    def para(self, easing: OsbEasing, start: float, end: float, parameter: str):
         assert (
             check_easing(easing)
             and check_time(start, end)
             and check_parameter(parameter)
         )
+        tag = "P"
         if start == end:
-            end = ""
+            end_time = ""
+        else:
+            end_time = str(end)
 
-        tag = "\n P"
-        self.add((tag, easing, start, end, parameter))
+        self.add((tag, easing, start, end_time, parameter))
 
     def loop(self, start: float, loop_count: int):
         assert check_float(start) and check_float(loop_count)
 
-        tag = "\n L"
+        tag = "L"
         self.add((tag, start, loop_count))
 
     def trigger(self, trigger: str, start: float, loop_count: int):
         assert check_trigger(trigger) and check_float(start) and check_float(loop_count)
 
-        tag = "\n T"
+        tag = "T"
         self.add((tag, trigger, start, loop_count))
 
     @classmethod
@@ -461,14 +457,14 @@ class Osbject:
                 "[Events]\n//Background and Video events\n//Storyboard Layer 0 (Background)\n"
             )
             for val in cls.obj_background:
-                text.write("%s\n" % "".join(val.props))
+                text.write("%s\n" % "\n".join(val.props))
             text.write("//Storyboard Layer 1 (Fail)\n")
             for val in cls.obj_fail:
-                text.write("%s\n" % "".join(val.props))
+                text.write("%s\n" % "\n".join(val.props))
             text.write("//Storyboard Layer 2 (Pass)\n")
             for val in cls.obj_pass:
-                text.write("%s\n" % "".join(val.props))
+                text.write("%s\n" % "\n".join(val.props))
             text.write("//Storyboard Layer 3 (Foreground)\n")
             for val in cls.obj_foreground:
-                text.write("%s\n" % "".join(val.props))
+                text.write("%s\n" % "\n".join(val.props))
             text.write("//Storyboard Sound Samples\n")
