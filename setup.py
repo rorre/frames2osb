@@ -37,10 +37,8 @@ setup(
         [
             "frames2osb/convert.py",
             "frames2osb/helper.py",
-            "frames2osb/pixels/osb.py",
-            "frames2osb/pixels/pixel_extract.py",
-            "frames2osb/quadtree/osb.py",
-            "frames2osb/quadtree/pixel_extract.py",
+            "frames2osb/pixels",
+            "frames2osb/quadtree",
         ]
     ),
 )
