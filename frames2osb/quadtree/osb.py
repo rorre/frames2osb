@@ -24,7 +24,7 @@ def disable_childs(key: str, offset: int):
 def generate_particles(
     quality: int,
     frame: FrameData,
-    fps: int = 30,
+    fps: float = 30,
     precision: int = 1,
     use_rgb: bool = False,
     music_offset: int = 0,
@@ -150,7 +150,7 @@ def generate_particles(
 def generate_osb(
     quality: int,
     output_filename: str,
-    fps: int = 30,
+    fps: float = 30,
     precision: int = 1,
     use_rgb: bool = False,
     music_offset: int = 0,

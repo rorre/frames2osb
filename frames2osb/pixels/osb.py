@@ -32,7 +32,7 @@ def generate_pixels(obj_size: int) -> PixelValue[Osbject]:
 def _run_rgb(
     obj_size: int,
     output_filename,
-    fps: int = 30,
+    fps: float = 30,
     precision: int = 1,
     use_rgb: bool = False,
     music_offset: int = 0,
@@ -87,7 +87,7 @@ def _run_rgb(
 def generate_osb(
     obj_size: int,
     output_filename,
-    fps: int = 30,
+    fps: float = 30,
     precision: int = 1,
     use_rgb: bool = False,
     music_offset: int = 0,
