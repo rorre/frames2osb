@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Turns (video) frames to osu!storyboard"
 authors = ["Rendy Arya Kemal <rendyarya22@gmail.com>"]
 license = "MIT"
+build = 'build.py'
 
 [tool.poetry.dependencies]
 python = ">3.8,<3.11"
@@ -18,5 +19,5 @@ black = {version = "^21.7b0", allow-prereleases = true}
 types-Pillow = "^8.3.3"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry-core>=1.0.0", "mypy"]
 build-backend = "poetry.core.masonry.api"
