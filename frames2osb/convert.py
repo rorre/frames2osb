@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import List, Literal, Optional, TypedDict, Union
 
 FFPROBE_CMD = 'ffprobe -v quiet -print_format json -show_format -show_streams "{0}"'
-FFMPEG_CMD = 'ffmpeg -i "{0}" -r 30 frames/%03d.jpg'
+FFMPEG_CMD = 'ffmpeg -i "{0}" frames/%03d.jpg'
 
 
 # Minimum typing just to get it done
