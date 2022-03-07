@@ -19,5 +19,5 @@ black = {version = "^21.7b0", allow-prereleases = true}
 types-Pillow = "^8.3.3"
 
 [build-system]
-requires = ["poetry-core>=1.0.0", "mypy"]
+requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
