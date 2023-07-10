@@ -1,7 +1,9 @@
+from multiprocessing import Pipe
+from multiprocessing.connection import PipeConnection
 import os
 import pickle
 import shutil
-from multiprocessing.pool import ThreadPool
+from multiprocessing.pool import AsyncResult, Pool
 from typing import List
 
 import numpy as np
@@ -23,7 +25,7 @@ def process_frames(
     image_files: List[str],
     filename: str,
     quality: int,
-    bar: SimpleProgressBar,
+    pipe: PipeConnection,
     start_frame: int = 0,
     use_rgb: bool = False,
 ):
@@ -43,7 +45,7 @@ def process_frames(
 
         qtree = QuadNode(numpy_image, x_max // 2, y_max // 2, max_depth=max_depth)
         quad_frames.append(FrameData(start_frame + i, qtree))
-        bar.update(1)
+        pipe.send(1)
         del im_resized
 
     with open(filename, "wb") as f:
@@ -60,13 +62,27 @@ def run(quality: int, use_rgb: bool = False, number_of_thread=2, number_of_split
     os.makedirs("datas", exist_ok=True)
 
     pbar = SimpleProgressBar(total=len(all_image_files))
-    with ThreadPool(number_of_thread) as pool:
+    with Pool(number_of_thread) as pool:
+        parent_conn, child_conn = Pipe()
         nchunk = len(all_image_files) // number_of_splits
+        results: List[AsyncResult] = []
         for i, arr in enumerate(chunks(all_image_files, nchunk)):
-            pool.apply_async(
+            result = pool.apply_async(
                 process_frames,
-                args=(arr, f"datas/data_{i}.dat", quality, pbar, nchunk * i, use_rgb),
+                args=(
+                    arr,
+                    f"datas/data_{i}.dat",
+                    quality,
+                    child_conn,
+                    nchunk * i,
+                    use_rgb,
+                ),
             )
+            results.append(result)
 
         pool.close()
+        while pbar.current < pbar.total - 1:
+            parent_conn.recv()
+            pbar.update(1)
+
         pool.join()
