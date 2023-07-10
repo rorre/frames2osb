@@ -60,6 +60,7 @@ class QuadTreeParser(CommonParser):
 class CLIParser(Tap):
     if TYPE_CHECKING:
         method: Literal["pixels", "quadtree"]
+        fps: float
     video: Optional[str] = None
 
     def configure(self) -> None:
