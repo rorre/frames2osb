@@ -1,3 +1,5 @@
+import traceback
+import ujson
 from multiprocessing import Pipe
 from multiprocessing.connection import PipeConnection
 import os
@@ -43,13 +45,16 @@ def process_frames(
         else:
             numpy_image = np.array(im_resized.convert("L"))
 
-        qtree = QuadNode(numpy_image, x_max // 2, y_max // 2, max_depth=max_depth)
+        qtree = QuadNode.from_image(
+            numpy_image, x_max // 2, y_max // 2, max_depth=max_depth
+        )
         quad_frames.append(FrameData(start_frame + i, qtree))
         pipe.send(1)
         del im_resized
 
-    with open(filename, "wb") as f:
-        pickle.dump(quad_frames, f)
+    output = [q.to_json() for q in quad_frames]
+    with open(filename, "w") as f:
+        ujson.dump(output, f)
 
     del quad_frames
 
@@ -77,6 +82,7 @@ def run(quality: int, use_rgb: bool = False, number_of_thread=2, number_of_split
                     nchunk * i,
                     use_rgb,
                 ),
+                error_callback=lambda x: traceback.print_exception(x),
             )
             results.append(result)
 

@@ -1,3 +1,4 @@
+import json
 import os
 import pickle
 from typing import Dict, List, Tuple, cast
@@ -17,7 +18,7 @@ def disable_childs(key: str, offset: int):
     for k in children_keys[key]:
         if k in pixels and pixels[k].alpha != 0:
             pixels[k].osb.fade(OsbEasing.NoEasing, offset, offset, 0, 0)
-            pixels[k].alpha = 0
+            pixels[k].alpha = 0.0
         disable_childs(k, offset)
 
 
@@ -118,9 +119,9 @@ def generate_particles(
                 pixels[key].osb.fade(
                     OsbEasing.NoEasing, start_offset, start_offset, 1, 1
                 )
-                pixels[key].alpha = 1
+                pixels[key].alpha = 1.0
         else:
-            mean_alpha = cast(int, qtree.mean.item())
+            mean_alpha = qtree.mean.item()
             alpha = round(mean_alpha / 255, precision)
 
             if pixels[key].alpha != alpha:
@@ -132,7 +133,7 @@ def generate_particles(
         # Disable ourselves if any of our child is turning on.
         if key in pixels and pixels[key].alpha != 0:
             pixels[key].osb.fade(OsbEasing.NoEasing, start_offset, start_offset, 0, 0)
-            pixels[key].alpha = 0
+            pixels[key].alpha = 0.0
 
         for q in (qtree.tl, qtree.tr, qtree.bl, qtree.br):
             if q:
@@ -160,7 +161,9 @@ def generate_osb(
 
     for data_file in ListProgressBar(data_files):
         with open(os.path.join("datas", data_file), "rb") as f:
-            frame_data: List[FrameData] = pickle.load(f)
+            frame_data: List[FrameData] = [
+                FrameData.from_json(data) for data in json.load(f)
+            ]
 
         for frame in frame_data:
             generate_particles(
