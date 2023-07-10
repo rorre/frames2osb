@@ -57,7 +57,7 @@ def get_stream(path: Path) -> Stream:
 
 def convert_video(video: str) -> float:
     p = Path(video)
-    if not p.exists:
+    if not p.exists():
         raise FileNotFoundError(f"File {p} does not exist.")
 
     print("> Getting video stream from file")
