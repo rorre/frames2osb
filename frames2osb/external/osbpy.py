@@ -66,8 +66,11 @@ def check_origin(origin: Origin):
     return True
 
 
+VALID_EASINGS = [item.value for item in OsbEasing]
+
+
 def check_easing(easing: OsbEasing):
-    if easing not in [item.value for item in OsbEasing]:
+    if easing not in VALID_EASINGS:
         raise ValueError("{val} is an invalid easing.".format(val=easing))
     return True
 
